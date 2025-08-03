@@ -18,12 +18,26 @@ except ImportError:
 
 try:
     import pytesseract
-    # For cloud deployment, tesseract should be in PATH
-    try:
-        pytesseract.get_tesseract_version()
-        TESSERACT_AVAILABLE = True
-    except:
-        TESSERACT_AVAILABLE = False
+    # For cloud deployment, try different tesseract paths
+    tesseract_paths = [
+        '/usr/bin/tesseract',  # Standard Linux path
+        '/usr/local/bin/tesseract',  # Alternative Linux path
+        'tesseract'  # If in PATH
+    ]
+    
+    tesseract_found = False
+    for path in tesseract_paths:
+        try:
+            if path != "tesseract":
+                pytesseract.pytesseract.tesseract_cmd = path
+            # Test if tesseract works
+            pytesseract.get_tesseract_version()
+            tesseract_found = True
+            break
+        except Exception:
+            continue
+    
+    TESSERACT_AVAILABLE = tesseract_found
 except ImportError:
     TESSERACT_AVAILABLE = False
 
@@ -74,7 +88,7 @@ def preprocess_image_advanced(image):
 def extract_text_from_image(image):
     """Extract text from image using OCR"""
     if not TESSERACT_AVAILABLE:
-        return "OCR_PLACEHOLDER_TEXT: Tesseract OCR not available on this deployment. Please type the problem text manually."
+        return "OCR_PLACEHOLDER_TEXT: Tesseract OCR installation failed on Streamlit Cloud. Please use the manual input feature below to type your problem text instead."
         
     try:
         # Preprocess the image
@@ -91,7 +105,7 @@ def extract_text_from_image(image):
         
         return text.strip() if text.strip() else "No text detected in image"
     except Exception as e:
-        return f"OCR Error: {str(e)}. Please type the problem manually."
+        return f"OCR Error: {str(e)}. Please use manual input instead."
 
 def get_solution_from_gpt(problem_text):
     """Get solution from GPT-4.1"""
@@ -315,7 +329,10 @@ def main():
     st.markdown("Upload images of DSA problems and get automated solutions with test cases!")
     
     # Deployment notice
-    st.info("🌐 **Live Demo** - Running on Streamlit Cloud with Azure OpenAI GPT-4.1")
+    if not TESSERACT_AVAILABLE:
+        st.warning("🔧 **OCR Notice**: Tesseract OCR is not available in this deployment. Please use the **Manual Input** feature in the sidebar to type your problems directly.")
+    else:
+        st.info("🌐 **Live Demo** - Running on Streamlit Cloud with Azure OpenAI GPT-4.1")
     
     # System status
     with st.expander("🔧 System Status", expanded=False):
