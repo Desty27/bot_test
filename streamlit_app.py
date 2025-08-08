@@ -48,11 +48,11 @@ except ImportError:
     OPENAI_AVAILABLE = False
 
 # Configuration - Use Streamlit secrets for deployment
-ENDPOINT = st.secrets.get("AZURE_OPENAI_ENDPOINT", "https://gpt-4o-intern.openai.azure.com/")
-MODEL_NAME = st.secrets.get("MODEL_NAME", "gpt-4.1")
-DEPLOYMENT = st.secrets.get("DEPLOYMENT", "gpt-4.1")
-API_KEY = st.secrets.get("AZURE_OPENAI_API_KEY", "BmaiYil8P7o3Dgv0JzIEIA4JYd3AHl7Jh6SzBdjkwXfF4DNxCzC3JQQJ99BGACYeBjFXJ3w3AAABACOGZkhi")
-API_VERSION = st.secrets.get("API_VERSION", "2024-12-01-preview")
+ENDPOINT = st.secrets.get("AZURE_OPENAI_ENDPOINT")
+MODEL_NAME = st.secrets.get("MODEL_NAME")
+DEPLOYMENT = st.secrets.get("DEPLOYMENT")
+API_KEY = st.secrets.get("AZURE_OPENAI_API_KEY")
+API_VERSION = st.secrets.get("API_VERSION")
 
 # Set page config
 st.set_page_config(
@@ -720,3 +720,4 @@ def process_problem(problem_text, max_iterations, show_intermediate, code_theme=
 
 if __name__ == "__main__":
     main()
+
